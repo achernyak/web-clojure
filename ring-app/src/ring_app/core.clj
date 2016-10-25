@@ -1,13 +1,19 @@
 (ns ring-app.core
   (:require [ring.adapter.jetty :as jetty]
-            [ring.util.response :as response]
+            [compojure.core :as compojure]
+            [ring.util.http-response :as response]
             [ring.middleware.reload :refer [wrap-reload]]))
 
-(defn handler [request-map]
-  (response/response
+(defn response-handler [request]
+  (response/ok
    (str "<html><body> your IP is: "
-        (:remote-addr request-map)
+        (:remote-addr request)
         "</body></html>")))
+
+(compojure/defroutes handler
+ (compojure/GET "/" request response-handler)
+ (compojure/GET "/:id" [id] (str "<p>the id is: " id "</p>"))
+ (compojure/GET "/json" [id] (response/ok {:result id})))
 
 (defn wrap-nocache [handler]
   (fn [request]
