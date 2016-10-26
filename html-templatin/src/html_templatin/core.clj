@@ -1,6 +1,7 @@
 (ns html-templatin.core
   (:require [selmer.parser :as selmer]
-            [selmer.filters :as filters]))
+            [selmer.filters :as filters]
+            [selmer.middleware :refer [wrap-error-page]]))
 
 (selmer/render "Hello, {{name}}" {:name "World"})
 
@@ -23,6 +24,12 @@
    (str "<img src=" (first args) "/>")))
 
 (selmer/render "{% image \"http://foo.com/logo.jpg\" %}" {})
+
+(defn render []
+  (wrap-error-page
+   (fn [template]
+     {:status 200
+      :body (selmer/render-file template {})})))
 
 (defn foo
   "I don't do a whole lot."
