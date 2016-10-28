@@ -1,11 +1,15 @@
 (ns guestbook.handler
-  (:require [compojure.core :refer [routes wrap-routes]]
-            [guestbook.layout :refer [error-page]]
-            [guestbook.routes.home :refer [home-routes]]
-            [compojure.route :as route]
-            [guestbook.env :refer [defaults]]
-            [mount.core :as mount]
-            [guestbook.middleware :as middleware]))
+  (:require [compojure
+             [core :refer [routes wrap-routes]]
+             [route :as route]]
+            [guestbook
+             [env :refer [defaults]]
+             [layout :refer [error-page]]
+             [middleware :as middleware]]
+            [guestbook.routes
+             [home :refer [home-routes]]
+             [ws :refer [websocket-routes]]]
+            [mount.core :as mount]))
 
 (mount/defstate init-app
                 :start ((or (:init defaults) identity))
@@ -13,9 +17,10 @@
 
 (def app-routes
   (routes
-    (-> #'home-routes
-        (wrap-routes middleware/wrap-csrf)
-        (wrap-routes middleware/wrap-formats))
+   #'websocket-routes
+   (-> #'home-routes
+       (wrap-routes middleware/wrap-csrf)
+       (wrap-routes middleware/wrap-formats))
     (route/not-found
       (:body
         (error-page {:status 404

@@ -60,3 +60,4 @@
     :else
     (start-app args)))
   
+(mapcat #(take 2 (repeat %)) [1 2 3])
