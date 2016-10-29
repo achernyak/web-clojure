@@ -21,7 +21,7 @@
 (defn encode-transit [message]
   (let [out (java.io.ByteArrayOutputStream. 4096)
         writer (transit/writer out :json)]
-    (transit/writer writer message)
+    (transit/write writer message)
     (.toString out)))
 
 (defn decode-transit [message]
